@@ -20,10 +20,10 @@ void Chat_Node::playAudio(const std::string& audio_file) {
     try {
         // 后台线程播放音频，避免阻塞主线程
         std::thread([audio_file, this]() {
-            std::string play_cmd = "aplay " + audio_file + " 2>/dev/null"; // 重定向错误输出
+            std::string play_cmd = "aplay -D plughw:CARD=Device,DEV=0 " + audio_file;
             int result = system(play_cmd.c_str());
             if (result != 0) {
-                RCLCPP_WARN(this->get_logger(), "音频播放失败: %s", audio_file.c_str());
+                RCLCPP_WARN(this->get_logger(), "音频播放失败(设备可能被占用): %s", audio_file.c_str());
             }
         }).detach();
     } catch (const std::exception& e) {
@@ -189,13 +189,13 @@ void Chat_Node::playThinkingAudio() {
         int audio_num = dis(gen);
         
         std::string audio_file = audio_path + "ineedtime" + std::to_string(audio_num) + ".wav";
-        
+
         // 在后台线程中播放音频,避免阻塞
         std::thread([audio_file, this]() {
-            std::string play_cmd = "aplay " + audio_file + " 2>/dev/null";
+            std::string play_cmd = "aplay -D plughw:CARD=Device,DEV=0 " + audio_file;
             int result = system(play_cmd.c_str());
             if (result != 0) {
-                RCLCPP_WARN(this->get_logger(), "思考提示音播放失败，但不影响对话功能");
+                RCLCPP_WARN(this->get_logger(), "思考提示音播放失败(设备可能被占用)，但不影响对话功能");
             }
         }).detach();
         

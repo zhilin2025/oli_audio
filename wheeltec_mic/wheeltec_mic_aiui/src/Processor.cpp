@@ -55,11 +55,12 @@ void onProgress(int streamId, int progress, const char* audio, int len, bool isC
 void startTTS(const std::string& text, const std::string& tag = "");
 
 int init_player()
-{   
+{
     player = std::make_unique<PCMPlayer>(16000, SND_PCM_FORMAT_S16_LE, 1);
     if (!initialized) {
         if (player->init_alsa()) {
             initialized = true;
+            player->close_alsa();  // 初始化后立即释放设备，避免占用导致aplay失败
             return 0;
         } else {
             return -1;
@@ -1040,6 +1041,8 @@ void tts_queue_process() {
             while(play_status && initialized){
                 std::this_thread::sleep_for(std::chrono::milliseconds(300));
             }
+            // 兜底释放设备：正常情况play_pcm()最后一包已关闭，此处防止TTS异常未走到关闭路径
+            if (initialized && player_mode) player->close_alsa();
 
             std::lock_guard<std::mutex> lock(tts_mutex);
             is_tts_playing = false;

@@ -32,6 +32,8 @@ public:
 
     void prepare();
 
+    void close_alsa();
+
 };
 
 

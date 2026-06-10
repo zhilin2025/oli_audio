@@ -218,11 +218,11 @@ void PCMPlayer::play_pcm(const char* audio_data, int len, int dts) {
         case 0: // 音频开始
             write_audio(audio_data, len);
             break;
-            
+
         case 1: // 音频中间块
             write_audio(audio_data, len);
             break;
-            
+
         case 2: // 音频结束
             write_audio(audio_data, len);
             break;
@@ -230,6 +230,29 @@ void PCMPlayer::play_pcm(const char* audio_data, int len, int dts) {
         case 3: // 独立音频,合成短文本时出现
             write_audio(audio_data, len);
             break;
+    }
+
+    // 最后一个音频块写完后关闭设备，释放给 aplay 等其他进程使用
+    if (dts == 2 || dts == 3) {
+        if (playback_handle) {
+            snd_pcm_drain(playback_handle);
+            snd_pcm_close(playback_handle);
+            playback_handle = nullptr;
+            std::cout << "PCMPlayer: 播放完成，已释放音频设备" << std::endl;
+        }
+    }
+}
+
+/**
+ * 主动关闭ALSA设备，释放给其他进程使用
+ */
+void PCMPlayer::close_alsa() {
+    std::lock_guard<std::mutex> lock(alsa_mutex);
+    if (playback_handle) {
+        snd_pcm_drain(playback_handle);
+        snd_pcm_close(playback_handle);
+        playback_handle = nullptr;
+        std::cout << "PCMPlayer: 已手动释放音频设备" << std::endl;
     }
 }
 
