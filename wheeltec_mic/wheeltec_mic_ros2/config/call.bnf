@@ -1,0 +1,13 @@
+﻿#BNF+IAT 1.0 UTF-8;
+!grammar call;
+
+!slot <action>;
+
+!start <callstart>;
+
+<callstart>:(小京|小狗|机械狗|狗子|关闭|停止)<choose>;
+<choose>:<action>|<posture>|<rotation>|<following>;
+<action>:前进|后退|停;
+<posture>:站起来|趴下|匍匐;
+<rotation>:原地转圈|向后转|向左转|向右转|(左|右)转;
+<following>:跟着我|停止跟随|开始跟随;
