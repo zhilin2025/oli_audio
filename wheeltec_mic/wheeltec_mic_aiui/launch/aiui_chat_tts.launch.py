@@ -32,19 +32,19 @@ def generate_launch_description():
         output='screen',
     )
 
-    # TTS 语音合成节点
-    tts_node = Node(
-        package="tts",
-        executable="tts_node",
-        output='screen',
-        parameters=[resource_param, tts_config]
-    )
+    # TTS 语音合成节点（已注释：AIUI_Node 已通过 PCMPlayer 完成TTS播报，无需重复合成）
+    # tts_node = Node(
+    #     package="tts",
+    #     executable="tts_node",
+    #     output='screen',
+    #     parameters=[resource_param, tts_config]
+    # )
 
     ld = LaunchDescription()
 
     ld.add_action(wheeltec_mic)
     ld.add_action(wheeltec_mic_aiui)
     ld.add_action(chat_service)
-    ld.add_action(tts_node)
+    # ld.add_action(tts_node)  # 已注释：AIUI_Node PCMPlayer 已负责TTS播报
     
     return ld

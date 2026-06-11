@@ -307,6 +307,12 @@ void DemoListener::handleEvent(const IAIUIEvent& event)
                 case AIUIConstant::VAD_BOS_TIMEOUT: {
                     std::cout << "EVENT_VAD: VAD_BOS_TIMEOUT" << std::endl;
                     alsaStop();
+                    // 超时无语音输入，播放休眠提示音
+                    std::thread([]() {
+                        std::string sleep_wav = CURRENT_PATH "/AIUI/audio/sleep.wav";
+                        std::string cmd = "aplay -D plughw:CARD=Device,DEV=0 " + sleep_wav;
+                        system(cmd.c_str());
+                    }).detach();
                 } break;
 
                 // 检测到前端点，即开始说话
@@ -1035,7 +1041,7 @@ void tts_queue_process() {
             if (initialized && player_mode) player->prepare();
             
             AIUIBuffer textData = aiui_create_buffer_from_data(text_to_play.c_str(), text_to_play.length());
-            SEND_AIUIMESSAGE(AIUIConstant::CMD_TTS, AIUIConstant::START, 0, "voice_name=x4_lingxiaoying_em_v2", textData);
+            SEND_AIUIMESSAGE(AIUIConstant::CMD_TTS, AIUIConstant::START, 0, "voice_name=x4_lingfeizhe_emo", textData);
             
             play_status = true;
             while(play_status && initialized){
