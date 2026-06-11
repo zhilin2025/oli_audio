@@ -11,7 +11,8 @@ chat_service:
     stream: false                           # true = 流式
     temperature: 0.5
     history_length: 10
-    
+    knowledge_base_path: "/home/guest/offline_chat/src/wheeltec_mic/wheeltec_mic_aiui/database"
+
 ollama_topic_server:
   ros__parameters:
     base_url: "http://localhost:11434/v1"   # 本地 Ollama
